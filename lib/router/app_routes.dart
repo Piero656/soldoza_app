@@ -32,7 +32,7 @@ class AppRoutes {
         icon: Icons.note_add_outlined),
     MenuOption(
         route: 'filter',
-        name: 'Add Incidence',
+        name: 'Add Work Observation',
         screen: const FilterScreen(),
         icon: Icons.filter_1_outlined)
   ];

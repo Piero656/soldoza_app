@@ -20,7 +20,7 @@ class ListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Incidences'),
+        title: const Text('Work Observations'),
       ),
       body: listOfIncidences(incidencias, incidenceProvider, formatter),
     );

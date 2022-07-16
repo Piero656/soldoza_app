@@ -6,10 +6,8 @@ import 'package:soldoza_app/providers/plant_provider.dart';
 import 'package:soldoza_app/providers/project_provider.dart';
 import 'package:soldoza_app/providers/zone_provider.dart';
 import 'package:soldoza_app/providers/zubzone_provider.dart';
-
-import '../providers/plant_provider.dart';
-import '../router/app_routes.dart';
-import '../theme/app_theme.dart';
+import 'package:soldoza_app/router/app_routes.dart';
+import 'package:soldoza_app/theme/app_theme.dart';
 
 class FormScreen extends StatefulWidget {
   const FormScreen({Key? key}) : super(key: key);
@@ -75,7 +73,6 @@ class _FormScreenState extends State<FormScreen> {
                   navigate(context, incidenceProvider.incidences);
                 }
               },
-              // child: Text("go"),
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -237,13 +234,11 @@ class _FormScreenState extends State<FormScreen> {
                 value: e.id,
                 child: Text('${e.codSubzona} - ${e.descripcionSubzona}')))
             .toList(),
-
         onChanged: (value) {
           if (value != AppRoutes.selects['filter_4']) {
             AppRoutes.selects['filter_4'] = value ?? '';
           }
         },
-
       );
     }
   }

@@ -22,7 +22,7 @@ class ProjectProvider extends ChangeNotifier {
       estado: '');
 
   ProjectProvider() {
-    getAllProjects();
+    getProjectsByUser(Global.userMap['id'].toString());
   }
 
   Future<List<Project>> getAllProjects() async {
@@ -34,6 +34,28 @@ class ProjectProvider extends ChangeNotifier {
       final response = await http.get(url);
 
       projects = response.body.jsonList((e) => Project.fromMap(e));
+
+      isLoading = false;
+      notifyListeners();
+      return projects;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<Project>> getProjectsByUser(String userId) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final endpoint = 'v1/project-users/user/$userId/projects';
+
+      final url = Uri.http(Global.urlAPI, endpoint);
+      final response = await http.get(url);
+
+      projects = response.body.jsonList((e) => Project.fromMap(e));
+
+      print(projects);
 
       isLoading = false;
       notifyListeners();

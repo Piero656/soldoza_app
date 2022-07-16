@@ -13,16 +13,16 @@ class PushNotificationService {
     print('background:  ${message.messageId}  ');
 
     sendNotification(
-        title: message.notification?.title ?? 'No Tittle',
-        body: message.notification?.body ?? 'No body');
+        title: message.data['title'] ?? 'No Title',
+        body: message.data['body']  ?? 'No body');
   }
 
   static Future _onMessagedHandle(RemoteMessage message) async {
     print('_onMessagedHandle:  ${message.messageId}  ');
 
     sendNotification(
-        title: message.notification?.title ?? 'No Tittle',
-        body: message.notification?.body ?? 'No body');
+        title: message.data['title']  ?? 'No Title',
+        body: message.data['body'] ?? 'No body');
   }
 
   static Future _onOpenApp(RemoteMessage message) async {

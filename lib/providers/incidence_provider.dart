@@ -95,7 +95,32 @@ class IncidenceProvider extends ChangeNotifier {
       "usuario": usuario
     });
 
+    print(formData.fields);
+
     var response = await Dio().post(endpoint, data: formData);
+
+    return response;
+  }
+
+  Future<http.Response> updateFields(
+      Map<String, dynamic> fields, String idIncidence) async {
+    isLoading = true;
+    notifyListeners();
+    final String endpoint = "$_endpoint/$idIncidence";
+
+    final url = Uri.http(Global.urlAPI, endpoint);
+
+    final json = jsonEncode(fields);
+
+    final response = await http.put(url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: json);
+
+    isLoading = false;
+
+    print(response.body);
 
     return response;
   }

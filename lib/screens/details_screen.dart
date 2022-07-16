@@ -2,8 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:soldoza_app/models/incidence.dart';
+import 'package:soldoza_app/providers/auth_provider.dart';
+import 'package:soldoza_app/providers/incidence_provider.dart';
 
 class DetailsScreen extends StatefulWidget {
   const DetailsScreen({Key? key}) : super(key: key);
@@ -15,15 +19,39 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   File? image;
 
+  List<XFile> images = [];
+
   Future pickImage() async {
     try {
-      final imagep = await ImagePicker().pickImage(source: ImageSource.gallery);
+      final imagesp = await ImagePicker().pickMultiImage();
+
+      if (imagesp == null) return;
+
+      for (var img in imagesp) {
+        final imageTemp = XFile(img.path);
+
+        images.add(imageTemp);
+      }
+
+      setState(() {});
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
+
+  Future takePhoto() async {
+    try {
+      final imagep = await ImagePicker().pickImage(source: ImageSource.camera);
 
       if (imagep == null) return;
 
-      final imageTemp = File(imagep.path);
+      final imageTemp = XFile(imagep.path);
 
-      image = imageTemp;
+      // print(imageTemp.path);
+      // print(image);
+
+      images.add(imageTemp);
+      // print(image);
 
       setState(() {});
     } on PlatformException catch (e) {
@@ -33,16 +61,26 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   bool loadingEmisorPhotos = true;
 
+  String incidenceComment = '';
+  String incidenceCorrectComment = '';
+
   @override
   Widget build(BuildContext context) {
     final Incidence incidence =
         ModalRoute.of(context)?.settings.arguments as Incidence;
-// print(incidence.fotos![0].fotoUrl.toString());
 
+    print(incidence.toJson());
+    
+
+    final AuthProvider authProvider = Provider.of<AuthProvider>(context);
+    final IncidenceProvider incidenceProvider =
+        Provider.of<IncidenceProvider>(context);
+
+print(authProvider.userMap.toString());
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Incidence ${incidence.codIncidente}',
+            '${incidence.codIncidente}',
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -100,10 +138,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 _customLabel("Status"),
                 _customValue(
                     "${incidence.estado!.codEstado} - ${incidence.estado!.descripcionEstado}"),
+
+                _customLabel("Commet"),
+                _customValue(
+                    incidence.comentarioReceptor ?? 'There is not comment'),
+                _customLabel("Correct Commet"),
+                _customValue(
+                    incidence.resultadoReceptor ?? 'There is not comment'),
                 const SizedBox(
                   height: 18,
                 ),
                 _emisorImages(incidence),
+                const SizedBox(
+                  height: 18,
+                ),
+                _receptorImages(incidence),
 
                 // ElevatedButton(
                 //     onPressed: () async {
@@ -121,21 +170,339 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 //         size: 160,
                 //       ),
                 const SizedBox(height: 45),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                          onPressed: () async {
-                            await _showMyDialog(context, "Confirm Action",
-                                "Sure you want to accept this indicence?");
-                          },
-                          child: const Text("Si")),
-                      ElevatedButton(onPressed: () {}, child: const Text("No")),
-                    ]),
+
+                if (authProvider.userMap["userType"]["id"] == 1 &&
+                    authProvider.userMap["role"]["id"] != 3 &&
+                    incidence.estado!.id == 1)
+                  _accepted(context, incidenceProvider, incidence),
+
+                if (authProvider.userMap["userType"]["id"] == 2 &&
+                    authProvider.userMap["role"]["id"] != 3 &&
+                    incidence.estado!.id == 2)
+                  _received(context, incidenceProvider, incidence),
+
+                if (authProvider.userMap["userType"]["id"] == 2 &&
+                    incidence.estado!.id == 4)
+                  _comment(
+                      context, incidenceProvider, incidence, incidenceComment),
+
+                if (authProvider.userMap["userType"]["id"] == 2 &&
+                    incidence.estado!.id == 5)
+                  _correct(context, incidenceProvider, incidence,
+                      incidenceComment, authProvider),
+
+                if (authProvider.userMap["userType"]["id"] == 1 &&
+                    authProvider.userMap["role"]["id"] != 3 &&
+                    incidence.estado!.id == 6)
+                  _close(context, incidenceProvider, incidence),
               ],
             ),
           ),
         ));
+  }
+
+  Widget _accepted(BuildContext context, IncidenceProvider incidenceProvider,
+      Incidence incidence) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.green,
+          ),
+          onPressed: incidenceProvider.isLoading == true
+              ? null
+              : () async {
+                  var r = await _showMyDialog(context, "Confirm Action",
+                      "Sure you want to Accept this indicence?");
+
+                  if (r == 'ok') {
+                    Map<String, dynamic> fields = {"estado": 2};
+
+                    await incidenceProvider.updateFields(
+                        fields, incidence.id.toString());
+                    Fluttertoast.showToast(
+                        msg: "Incidence State Updated",
+                        backgroundColor: Colors.green);
+
+                    if (!mounted) return;
+                    Navigator.pushNamed(context, 'home');
+                  }
+                },
+          child: const Text("Accept")),
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.red,
+          ),
+          onPressed: incidenceProvider.isLoading == true
+              ? null
+              : () async {
+                  var r = await _showMyDialog(context, "Confirm Action",
+                      "Sure you want to Reject this indicence?");
+
+                  if (r == 'ok') {
+                    Map<String, dynamic> fields = {"estado": 3};
+
+                    await incidenceProvider.updateFields(
+                        fields, incidence.id.toString());
+                    Fluttertoast.showToast(
+                        msg: "Incidence State Updated",
+                        backgroundColor: Colors.green);
+
+                    if (!mounted) return;
+                    Navigator.pushNamed(context, 'home');
+                  }
+                },
+          child: const Text("Reject")),
+    ]);
+  }
+
+  Widget _received(BuildContext context, IncidenceProvider incidenceProvider,
+      Incidence incidence) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.green,
+          ),
+          onPressed: incidenceProvider.isLoading == true
+              ? null
+              : () async {
+                  var r = await _showMyDialog(context, "Confirm Action",
+                      "Sure you want to Receive this indicence?");
+
+                  if (r == 'ok') {
+                    Map<String, dynamic> fields = {"estado": 4};
+
+                    await incidenceProvider.updateFields(
+                        fields, incidence.id.toString());
+                    Fluttertoast.showToast(
+                        msg: "Incidence State Updated",
+                        backgroundColor: Colors.green);
+
+                    if (!mounted) return;
+                    Navigator.pushNamed(context, 'home');
+                  }
+                },
+          child: const Text("Receive")),
+    ]);
+  }
+
+  Widget _comment(BuildContext context, IncidenceProvider incidenceProvider,
+      Incidence incidence, String incidenceComment) {
+    return Column(
+      children: [
+        Align(
+            alignment: Alignment.centerLeft, child: _customLabel("Comment: ")),
+        TextFormField(
+          decoration: const InputDecoration(label: Text("Required Comment")),
+          maxLines: 18,
+          onChanged: (value) {
+            incidenceComment = value;
+          },
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        ElevatedButton(
+            onPressed: incidenceProvider.isLoading
+                ? null
+                : () async {
+                    if (incidenceComment == '') {
+                      await _showMyDialogRequired(
+                          context, "Comment Missing", "Please add a Comment");
+                      return;
+                    }
+
+                    var r = await _showMyDialog(context, "Confirm Action",
+                        "Sure you want to Comment this indicence?");
+
+                    if (r == 'ok') {
+                      Map<String, dynamic> fields = {
+                        "comentarioReceptor": incidenceComment,
+                        "estado": 5
+                      };
+
+                      await incidenceProvider.updateFields(
+                          fields, incidence.id.toString());
+                      Fluttertoast.showToast(
+                          msg: "Incidence State Updated",
+                          backgroundColor: Colors.green);
+
+                      if (!mounted) return;
+                      Navigator.pushNamed(context, 'home');
+                    }
+                  },
+
+            // child: Text("go"),
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              )),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              child: Text(
+                "Comment",
+                style: TextStyle(fontSize: 15),
+              ),
+            )),
+        const SizedBox(
+          height: 30,
+        )
+      ],
+    );
+  }
+
+  Widget _correct(BuildContext context, IncidenceProvider incidenceProvider,
+      Incidence incidence, String incidenceComment, AuthProvider authProvider) {
+    return Column(
+      children: [
+        Align(
+            alignment: Alignment.centerLeft,
+            child: _customLabel("Correct Comment: ")),
+        TextFormField(
+          decoration:
+              const InputDecoration(label: Text("Required Correct Comment")),
+          maxLines: 18,
+          onChanged: (value) {
+            incidenceCorrectComment = value;
+          },
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            ElevatedButton(
+                onPressed: () async {
+                  await pickImage();
+                },
+                child: const Text("Image Gallery")),
+            ElevatedButton(
+                onPressed: () async {
+                  await takePhoto();
+                },
+                child: const Text("Take Photo")),
+            ElevatedButton(
+                onPressed: () async {
+                  images = [];
+                  setState(() {});
+                },
+                child: const Icon(Icons.delete)),
+          ],
+        ),
+
+        const SizedBox(
+          height: 30,
+        ),
+
+        if (images.isEmpty) const Text("No images selected"),
+
+        // if(images.isNotEmpty)
+        // images.map((i) => Text(""))
+
+        if (images.isNotEmpty)
+          for (var i in images)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: Image.file(
+                File(i.path),
+                width: double.infinity,
+                height: 350,
+                fit: BoxFit.cover,
+              ),
+            ),
+
+        const SizedBox(
+          height: 30,
+        ),
+        ElevatedButton(
+            onPressed: incidenceProvider.isLoading
+                ? null
+                : () async {
+                    if (incidenceCorrectComment == '') {
+                      await _showMyDialogRequired(
+                          context,
+                          "Correct Comment Missing",
+                          "Please add a Correct Comment");
+                      return;
+                    }
+
+                    var r = await _showMyDialog(context, "Confirm Action",
+                        "Sure you want to Correct this indicence?");
+
+                    if (r == 'ok') {
+                      Map<String, dynamic> fields = {
+                        "comentarioReceptor": incidenceComment,
+                        "estado": 6
+                      };
+
+                      await incidenceProvider.updateFields(
+                          fields, incidence.id.toString());
+
+                      await incidenceProvider.postImages(images, incidence.id,
+                          '123', '123 ', authProvider.userMap["id"]);
+
+                      Fluttertoast.showToast(
+                          msg: "Incidence State Updated",
+                          backgroundColor: Colors.green);
+
+                      if (!mounted) return;
+                      Navigator.pushNamed(context, 'home');
+                    }
+                  },
+            // child: Text("go"),
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              )),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              child: Text(
+                "Correct",
+                style: TextStyle(fontSize: 15),
+              ),
+            )),
+        const SizedBox(
+          height: 30,
+        )
+      ],
+    );
+  }
+
+  Widget _close(BuildContext context, IncidenceProvider incidenceProvider,
+      Incidence incidence) {
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.green,
+          ),
+          onPressed: incidenceProvider.isLoading == true
+              ? null
+              : () async {
+                  var r = await _showMyDialog(context, "Confirm Action",
+                      "Sure you want to Close this indicence?");
+
+                  if (r == 'ok') {
+                    Map<String, dynamic> fields = {"estado": 7};
+
+                    await incidenceProvider.updateFields(
+                        fields, incidence.id.toString());
+                    Fluttertoast.showToast(
+                        msg: "Incidence State Updated",
+                        backgroundColor: Colors.green);
+
+                    if (!mounted) return;
+                    Navigator.pushNamed(context, 'home');
+                  }
+                },
+          child: const Text("Close")),
+    ]);
   }
 
   Widget _noConformidad(Incidence incidence) => Padding(
@@ -144,7 +511,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
             borderRadius: BorderRadius.circular(5.0),
             child: Text(
               'Nonconformity Code:  ${incidence.codigoNc!}',
-              style: TextStyle(
+              style: const TextStyle(
                 backgroundColor: Colors.redAccent,
                 fontSize: 18,
               ),
@@ -223,9 +590,43 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
   }
 
-  Future<void> _showMyDialog(
+  Widget _receptorImages(Incidence incidence) {
+    final List<Foto> emisorImages = [];
+
+    for (var img in incidence.fotos!) {
+      if (img.usuario!.tipoUsuario!.id == 2) {
+        emisorImages.add(img);
+      }
+    }
+
+    if (emisorImages.isEmpty) {
+      return const Text("There is not receiver images.");
+    } else {
+      return Column(
+        children: [
+          _customLabel("Receiver Images"),
+          const SizedBox(
+            height: 18,
+          ),
+          for (var img in emisorImages)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: FadeInImage(
+                image: NetworkImage(img.fotoUrl!),
+                placeholder: const AssetImage("assets/jar-loading.gif"),
+                width: double.infinity,
+                height: 350,
+                fit: BoxFit.cover,
+              ),
+            ),
+        ],
+      );
+    }
+  }
+
+  Future _showMyDialog(
       BuildContext context, String title, String content) async {
-    return showDialog<void>(
+    return showDialog<String>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
@@ -243,14 +644,42 @@ class _DetailsScreenState extends State<DetailsScreen> {
             TextButton(
               child: const Text('Confirm'),
               onPressed: () {
-                print('Confirmed');
-                Navigator.of(context).pop();
+                Navigator.pop(context, "ok");
               },
             ),
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context, "cancel");
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showMyDialogRequired(
+      BuildContext context, String title, String content) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(content),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.pop(context);
               },
             ),
           ],

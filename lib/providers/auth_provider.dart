@@ -29,6 +29,8 @@ class AuthProvider extends ChangeNotifier {
       token = resp['token'];
       userMap = parseJwt(token);
 
+      Global.userMap = userMap;
+
       print(userMap);
 
       notifyListeners();
