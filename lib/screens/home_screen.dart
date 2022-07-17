@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
 import 'package:soldoza_app/providers/incidence_provider.dart';
+import 'package:soldoza_app/router/app_routes.dart';
 import 'package:soldoza_app/screens/filter_screen.dart';
 import 'package:soldoza_app/screens/form_screen.dart';
 
@@ -17,20 +19,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedDrawerItem = 0;
-  String _title = '';
+  String _title = 'Search Filters';
 
   final List<String> nombres = ["uno", "dos", "tres"];
 
   _getDrawerItemWidget(int pos) {
     switch (pos) {
       case 0:
-        return ListItems(
-          nombres: nombres,
-        );
+        Global.selects['filter_1'] = '';
+        Global.selects['filter_2'] = '';
+        Global.selects['filter_3'] = '';
+        Global.selects['filter_4'] = '';
+        Global.selects['filter_5'] = '';
 
-      case 1:
         return const FormScreen();
-      case 2:
+      case 1:
         IncidenceProvider.newIncidence["proyecto"] = null;
         IncidenceProvider.newIncidence["instalacion"] = null;
         IncidenceProvider.newIncidence["zona"] = null;
@@ -52,10 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _onSelectDrawerItem(int pos, String title) {
     Navigator.of(context).pop();
-    setState(() {
-      _selectedDrawerItem = pos;
-      _title = title;
-    });
+    if (_selectedDrawerItem != pos) {
+      setState(() {
+        _selectedDrawerItem = pos;
+        _title = title;
+      });
+    }
   }
 
   @override

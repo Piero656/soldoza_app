@@ -25,6 +25,8 @@ class Project {
     String? estado;
     Cliente? cliente;
 
+
+
     factory Project.fromJson(String str) => Project.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());

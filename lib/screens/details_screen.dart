@@ -70,13 +70,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
         ModalRoute.of(context)?.settings.arguments as Incidence;
 
     print(incidence.toJson());
-    
 
     final AuthProvider authProvider = Provider.of<AuthProvider>(context);
     final IncidenceProvider incidenceProvider =
         Provider.of<IncidenceProvider>(context);
 
-print(authProvider.userMap.toString());
+    print(authProvider.userMap.toString());
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -138,13 +137,14 @@ print(authProvider.userMap.toString());
                 _customLabel("Status"),
                 _customValue(
                     "${incidence.estado!.codEstado} - ${incidence.estado!.descripcionEstado}"),
-
                 _customLabel("Commet"),
-                _customValue(
-                    incidence.comentarioReceptor ?? 'There is not comment'),
+                _customValue(incidence.comentarioReceptor == ''
+                    ? 'There is not comment'
+                    : incidence.comentarioReceptor!),
                 _customLabel("Correct Commet"),
-                _customValue(
-                    incidence.resultadoReceptor ?? 'There is not comment'),
+                _customValue(incidence.resultadoReceptor == ''
+                    ? 'There is not correct comment'
+                    : incidence.resultadoReceptor!),
                 const SizedBox(
                   height: 18,
                 ),
@@ -189,7 +189,7 @@ print(authProvider.userMap.toString());
                 if (authProvider.userMap["userType"]["id"] == 2 &&
                     incidence.estado!.id == 5)
                   _correct(context, incidenceProvider, incidence,
-                      incidenceComment, authProvider),
+                      incidenceCorrectComment, authProvider),
 
                 if (authProvider.userMap["userType"]["id"] == 1 &&
                     authProvider.userMap["role"]["id"] != 3 &&
@@ -354,7 +354,7 @@ print(authProvider.userMap.toString());
   }
 
   Widget _correct(BuildContext context, IncidenceProvider incidenceProvider,
-      Incidence incidence, String incidenceComment, AuthProvider authProvider) {
+      Incidence incidence, String incidenceCorrectComment, AuthProvider authProvider) {
     return Column(
       children: [
         Align(
@@ -435,7 +435,7 @@ print(authProvider.userMap.toString());
 
                     if (r == 'ok') {
                       Map<String, dynamic> fields = {
-                        "comentarioReceptor": incidenceComment,
+                        "comentarioReceptor": incidenceCorrectComment,
                         "estado": 6
                       };
 

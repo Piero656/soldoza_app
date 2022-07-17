@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
-
-import '../router/app_routes.dart';
-import '../theme/app_theme.dart';
+import 'package:soldoza_app/router/app_routes.dart';
+import 'package:soldoza_app/theme/app_theme.dart';
 
 class NavigationDrawer extends StatelessWidget {
   final Function setPosition;
@@ -40,7 +39,7 @@ class NavigationDrawer extends StatelessWidget {
             borderRadius: BorderRadius.circular(55),
             child: FadeInImage(
               image: NetworkImage(
-                  'https://i.pinimg.com/originals/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg'),
+                  'https://storagesoldoza.blob.core.windows.net/perfiles/${authProvider.userMap['userPhoto']}'),
               placeholder: const AssetImage('assets/jar-loading.gif'),
               width: 120,
               height: 120,
@@ -48,12 +47,12 @@ class NavigationDrawer extends StatelessWidget {
               fadeInDuration: const Duration(milliseconds: 300),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Text(
             '${authProvider.userMap["name"]} ${authProvider.userMap["lastName"]}',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+            style: const TextStyle(color: Colors.white, fontSize: 20),
           )
         ],
       ),
@@ -78,19 +77,10 @@ class MenuOptions extends StatelessWidget {
       child: Column(
         children: [
           ListTile(
-            leading: Icon(AppRoutes.menuOptions[0].icon),
-            title: Text(AppRoutes.menuOptions[0].name),
-            onTap: () {
-              setPosition(0, AppRoutes.menuOptions[0].name);
-
-              // Navigator.pushReplacementNamed(context, AppRoutes.menuOptions[index].route);
-            },
-          ),
-          ListTile(
             leading: Icon(AppRoutes.menuOptions[1].icon),
             title: Text(AppRoutes.menuOptions[1].name),
             onTap: () {
-              setPosition(1, AppRoutes.menuOptions[1].name);
+              setPosition(0, AppRoutes.menuOptions[1].name);
 
               // Navigator.pushReplacementNamed(context, AppRoutes.menuOptions[index].route);
             },
@@ -100,7 +90,7 @@ class MenuOptions extends StatelessWidget {
               leading: Icon(AppRoutes.menuOptions[2].icon),
               title: Text(AppRoutes.menuOptions[2].name),
               onTap: () {
-                setPosition(2, AppRoutes.menuOptions[2].name);
+                setPosition(1, AppRoutes.menuOptions[2].name);
 
                 // Navigator.pushReplacementNamed(context, AppRoutes.menuOptions[index].route);
               },
@@ -109,9 +99,9 @@ class MenuOptions extends StatelessWidget {
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
             onTap: () {
-              
-              authProvider.updateFirebaseToken('', authProvider.userMap['id'].toString());
-              
+              authProvider.updateFirebaseToken(
+                  '', authProvider.userMap['id'].toString());
+
               Navigator.of(context).pushNamedAndRemoveUntil(
                   'login', (Route<dynamic> route) => false);
             },

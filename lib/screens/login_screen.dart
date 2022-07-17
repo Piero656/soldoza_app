@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
+import 'package:soldoza_app/providers/plant_provider.dart';
+import 'package:soldoza_app/providers/project_provider.dart';
 import 'package:soldoza_app/services/push_notification_service.dart';
 
 import '../theme/app_theme.dart';
@@ -14,10 +17,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final projectProvider = Provider.of<ProjectProvider>(context);
+    final plantProvider = Provider.of<PlantProvider>(context);
 
     final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
 
@@ -27,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     };
 
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         height: double.infinity,
         width: double.infinity,
         child: SingleChildScrollView(
@@ -37,7 +41,8 @@ class _LoginScreenState extends State<LoginScreen> {
           //   height: 300,
           // ),
           Padding(
-            padding: const EdgeInsets.only(top: 150, bottom: 50, left: 25,right: 25),
+            padding: const EdgeInsets.only(
+                top: 150, bottom: 50, left: 25, right: 25),
             child: Container(
               width: double.infinity,
               // color: Colors.orange,
@@ -112,34 +117,39 @@ class _LoginScreenState extends State<LoginScreen> {
                                   if (!myFormKey.currentState!.validate()) {
                                     return;
                                   }
-                           
 
                                   String token = await authProvider.login(
                                       formValues['username']!,
                                       formValues['password']!);
 
-                 
                                   if (token.isNotEmpty) {
+                                    await PushNotificationService
+                                        .initializeApp();
 
-                                    
-
-                                    await PushNotificationService.initializeApp();
-
-                                    await authProvider.updateFirebaseToken(PushNotificationService.token ?? 'no token', authProvider.userMap['id'].toString());
+                                    await authProvider.updateFirebaseToken(
+                                        PushNotificationService.token ??
+                                            'no token',
+                                        authProvider.userMap['id'].toString());
 
                                     print(PushNotificationService.token);
+
+                                    await projectProvider.getProjectsByUser(
+                                        Global.userMap["id"].toString());
+                                    await plantProvider.getPlantByUserId(
+                                        Global.userMap["id"].toString());
 
                                     if (!mounted) return;
                                     Navigator.pushReplacementNamed(
                                         context, 'home');
-                                  }
-                                  else {
-                                    const text = 'Usuario o contraseña Incorrectos';
-                                    const snackBar = SnackBar(content: Text(text));
+                                  } else {
+                                    const text =
+                                        'Usuario o contraseña Incorrectos';
+                                    const snackBar =
+                                        SnackBar(content: Text(text));
 
                                     if (!mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                                    
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
                                   }
                                 },
                           // child: Text("go"),

@@ -12,12 +12,6 @@ import '../models/models.dart';
 class AppRoutes {
   static const initialRoute = 'login';
 
-  static Map<String, dynamic> selects = {
-    'filter_1': 0,
-    'filter_2': 0,
-    'filter_3': 0,
-    'filter_4': 0,
-  };
 
   static final menuOptions = <MenuOption>[
     MenuOption(

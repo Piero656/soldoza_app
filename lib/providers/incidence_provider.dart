@@ -40,14 +40,18 @@ class IncidenceProvider extends ChangeNotifier {
       final endpoint = '$_endpoint/find-by-filters';
 
       final url = Uri.http(Global.urlAPI, endpoint, {
-        'proyectoId': AppRoutes.selects['filter_1'].toString(),
-        'instalacionId': AppRoutes.selects['filter_2'].toString(),
-        'zonaId': AppRoutes.selects['filter_3'].toString(),
-        'subZonaId': AppRoutes.selects['filter_4'].toString()
+        'proyectoId': Global.selects['filter_1'].toString(),
+        'instalacionId': Global.selects['filter_2'].toString(),
+        'zonaId': Global.selects['filter_3'].toString(),
+        'subZonaId': Global.selects['filter_4'].toString(),
+        'disciplinaId': Global.selects['filter_5'].toString()
       });
 
       final response = await http.get(url);
       incidences = response.body.jsonList((e) => Incidence.fromMap(e));
+
+      print(incidences.length);
+
       isLoading = false;
       notifyListeners();
       return incidences;
