@@ -71,7 +71,7 @@ class _FormScreenState extends State<FormScreen> {
           const SizedBox(
             height: 18,
           ),
-          inputTitle("Subzones:"),
+          inputTitle("Sub Zones:"),
           subzonesDropDown(subzonesProvider),
           const SizedBox(
             height: 18,

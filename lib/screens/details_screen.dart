@@ -139,9 +139,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 _customLabel("Status"),
                 _customValue(
                     "${incidence.estado!.codEstado} - ${incidence.estado!.descripcionEstado}"),
-                _customLabel("Commet"),
+                _customLabel("Commented"),
                 _customValue(incidence.comentarioReceptor == ''
-                    ? 'There is not comment'
+                    ? 'There is not commented'
                     : incidence.comentarioReceptor!),
                 _customLabel("Corrected"),
                 _customValue(incidence.resultadoReceptor == ''

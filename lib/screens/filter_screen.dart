@@ -471,7 +471,7 @@ class _FilterScreenState extends State<FilterScreen> {
       );
     } else {
       return DropdownButtonFormField<int>(
-        decoration: const InputDecoration(label: Text("Subzones:")),
+        decoration: const InputDecoration(label: Text("Sub Zones:")),
         items: subzoneProvider.subzones
             .map((e) => DropdownMenuItem(
                 value: e.id,
