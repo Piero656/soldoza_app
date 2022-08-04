@@ -3,14 +3,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:json_helpers/json_helpers.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/incidence.dart';
-import 'package:http/http.dart' as http;
-import 'package:soldoza_app/router/app_routes.dart';
 
 class IncidenceProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/incidences';
+  final String _endpoint = '/incidences';
 
   List<Incidence> incidences = [];
 
@@ -39,18 +36,16 @@ class IncidenceProvider extends ChangeNotifier {
 
       final endpoint = '$_endpoint/find-by-filters';
 
-      final url = Uri.http(Global.urlAPI, endpoint, {
+      final url = Global.urlAPI + endpoint;
+
+      final response = await Dio().get(url, queryParameters: {
         'proyectoId': Global.selects['filter_1'].toString(),
         'instalacionId': Global.selects['filter_2'].toString(),
         'zonaId': Global.selects['filter_3'].toString(),
         'subZonaId': Global.selects['filter_4'].toString(),
         'disciplinaId': Global.selects['filter_5'].toString()
       });
-
-      final response = await http.get(url);
-      incidences = response.body.jsonList((e) => Incidence.fromMap(e));
-
-      print(incidences.length);
+      incidences = (response.data as List).map((x) => Incidence.fromMap(x)).toList();
 
       isLoading = false;
       notifyListeners();
@@ -60,20 +55,16 @@ class IncidenceProvider extends ChangeNotifier {
     }
   }
 
-  Future<http.Response> postIncidence() async {
+  Future<Response> postIncidence() async {
     isLoading = true;
     notifyListeners();
     final String endpoint = _endpoint;
 
-    final url = Uri.http(Global.urlAPI, endpoint);
+    final url = Global.urlAPI + endpoint;
 
     final json = jsonEncode(newIncidence);
 
-    final response = await http.post(url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: json);
+    final response = await Dio().post(url, data: json);
 
     isLoading = false;
 
@@ -89,7 +80,7 @@ class IncidenceProvider extends ChangeNotifier {
       filestoUpload.add(img);
     }
 
-    final endpoint = 'http://${Global.urlAPI}/v1/photos/upload-to-incident';
+    final endpoint = '${Global.urlAPI}/photos/upload-to-incident';
 
     FormData formData = FormData.fromMap({
       "files": filestoUpload,
@@ -99,32 +90,26 @@ class IncidenceProvider extends ChangeNotifier {
       "usuario": usuario
     });
 
-    print(formData.fields);
-
     var response = await Dio().post(endpoint, data: formData);
 
     return response;
   }
 
-  Future<http.Response> updateFields(
+  Future<Response> updateFields(
       Map<String, dynamic> fields, String idIncidence) async {
     isLoading = true;
     notifyListeners();
     final String endpoint = "$_endpoint/$idIncidence";
 
-    final url = Uri.http(Global.urlAPI, endpoint);
+    final url = Global.urlAPI + endpoint;
 
     final json = jsonEncode(fields);
 
-    final response = await http.put(url,
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: json);
+    final response = await Dio().put(url, data: json);
 
     isLoading = false;
 
-    print(response.body);
+    print(response);
 
     return response;
   }

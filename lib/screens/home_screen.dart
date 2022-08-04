@@ -4,11 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
 import 'package:soldoza_app/providers/incidence_provider.dart';
-import 'package:soldoza_app/router/app_routes.dart';
 import 'package:soldoza_app/screens/filter_screen.dart';
 import 'package:soldoza_app/screens/form_screen.dart';
+import 'package:soldoza_app/widgets/navigation_drawer.dart';
 
-import '../widgets/navigation_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

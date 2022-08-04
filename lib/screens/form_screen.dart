@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/incidence.dart';
@@ -43,7 +44,7 @@ class _FormScreenState extends State<FormScreen> {
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
       child: Column(
         children: [
-          inputTitle("Client:"),
+          inputTitle("Customer:"),
           if (Global.userMap['userType']['id'] == 1)
             clientText(projectProvider),
           if (Global.userMap['userType']['id'] == 2)
@@ -82,9 +83,6 @@ class _FormScreenState extends State<FormScreen> {
           ),
           ElevatedButton(
               onPressed: () async {
-
-                print(Global.selects);
-
                 if (Global.userMap['userType']['id'] == 1) {
                   if (Global.selects['filter_1'] == '') {
                     await _showMyDialog(
@@ -114,6 +112,9 @@ class _FormScreenState extends State<FormScreen> {
                 if (incidenceProvider.incidences.isNotEmpty) {
                   if (!mounted) return;
                   navigate(context, incidenceProvider.incidences);
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "No Work Observations", backgroundColor: Colors.red);
                 }
               },
               style: ButtonStyle(

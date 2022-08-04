@@ -1,12 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:json_helpers/json_helpers.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/category.dart';
-import 'package:http/http.dart' as http;
+
 
 class CategoryProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/categories';
+  final String _endpoint = '/categories';
 
   List<MultiSelectItem<int>> items = [];
   List<Category> categories = [];
@@ -19,10 +19,10 @@ class CategoryProvider extends ChangeNotifier {
 
       final endpoint = '$_endpoint/discipline/$idDiscipline';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-      categories = response.body.jsonList((e) => Category.fromMap(e));
+      categories = (response.data as List).map((x) => Category.fromMap(x)).toList();
 
       items = categories
           .map((categories) =>

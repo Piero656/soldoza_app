@@ -1,13 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:json_helpers/json_helpers.dart';
-
-import 'package:http/http.dart' as http;
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/plant.dart';
 import 'package:soldoza_app/models/project.dart';
 
 class PlantProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/plants/project';
+  final String _endpoint = '/plants/project';
 
   List<Plant> plants = [];
   List<Plant> plantsByUser = [];
@@ -23,8 +21,7 @@ class PlantProvider extends ChangeNotifier {
       email: '',
       estado: '');
 
-  Project project =
-      Project(id: 0, codProyecto: '', descripcionProyecto: '');
+  Project project = Project(id: 0, codProyecto: '', descripcionProyecto: '');
 
   bool isLoading = false;
 
@@ -39,10 +36,10 @@ class PlantProvider extends ChangeNotifier {
 
       final endpoint = '$_endpoint/$idProject';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-      plants = response.body.jsonList((e) => Plant.fromMap(e));
+      plants = (response.data as List).map((x) => Plant.fromMap(x)).toList();
       isLoading = false;
       notifyListeners();
       return plants;
@@ -56,12 +53,12 @@ class PlantProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final endpoint = 'v1/plant-users/user/$userId/plants';
+      final endpoint = '/plant-users/user/$userId/plants';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-      plantsByUser = response.body.jsonList((e) => Plant.fromMap(e));
+      plantsByUser = (response.data as List).map((x) => Plant.fromMap(x)).toList();
 
       isLoading = false;
       notifyListeners();

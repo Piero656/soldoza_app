@@ -121,7 +121,7 @@ class _FilterScreenState extends State<FilterScreen> {
           children: [
             TextFormField(
               readOnly: true,
-              decoration: const InputDecoration(label: Text("Incidence Day")),
+              decoration: const InputDecoration(label: Text("WO Date")),
               initialValue: formatter.format(date),
             ),
             dropProjects(projectProvider, plantProvider, zonesProvider,
@@ -134,8 +134,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 disciplineProvider, categoryProvider, incidenceProvider),
             categoriesDropDown(categoryProvider, incidenceProvider),
             TextFormField(
-              decoration:
-                  const InputDecoration(label: Text("Incidence Description")),
+              decoration: const InputDecoration(label: Text("WO Description")),
               maxLines: 18,
               onChanged: (value) {
                 IncidenceProvider.newIncidence["descripcionIncidencia"] = value;
@@ -152,7 +151,7 @@ class _FilterScreenState extends State<FilterScreen> {
               controller: myController,
               readOnly: true,
               decoration: const InputDecoration(
-                  label: Text("Limit Date"),
+                  label: Text("Expiration Date"),
                   suffixIcon: Icon(Icons.calendar_month_outlined)),
               onTap: () async {
                 DateTime? newDate = await showDatePicker(
@@ -174,22 +173,10 @@ class _FilterScreenState extends State<FilterScreen> {
               height: 30,
             ),
 
-            SwitchListTile.adaptive(
-                value: _sliderEnable,
-                title: const Text("Nonconformity"),
-                onChanged: (value) {
-                  _sliderEnable = value;
-                  IncidenceProvider.newIncidence["esNoConformidad"] = value;
-                  IncidenceProvider.newIncidence["codigoNC"] = '';
-                  setState(() {});
-                }),
-            if(_sliderEnable)
-            TextFormField(
-              decoration: const InputDecoration(label: Text("Nonconformity Code")),
-              onChanged: (value) {
-                IncidenceProvider.newIncidence["codigoNC"] = value;
-              },
-            ),
+            if (authProvider.userMap["userType"]["id"] == 1 &&
+                authProvider.userMap["role"]["id"] != 3)
+              _ncr(),
+
             const SizedBox(
               height: 30,
             ),
@@ -250,7 +237,6 @@ class _FilterScreenState extends State<FilterScreen> {
                         IncidenceProvider.newIncidence["usuarioCreador"] =
                             authProvider.userMap["id"];
 
-
                         print(IncidenceProvider.newIncidence);
 
                         if (IncidenceProvider.newIncidence["proyecto"] ==
@@ -262,8 +248,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
                         if (IncidenceProvider.newIncidence["instalacion"] ==
                             null) {
-                          await _showMyDialog(context, "Instalation Missing",
-                              "Please select a Instalation");
+                          await _showMyDialog(context, "Installation Missing",
+                              "Please select a Installation");
                           return;
                         }
 
@@ -312,8 +298,10 @@ class _FilterScreenState extends State<FilterScreen> {
 
                         if (IncidenceProvider.newIncidence["fechaLimite"] ==
                             null) {
-                          await _showMyDialog(context, "Limit Date Missing",
-                              "Please select a Limit Date");
+                          await _showMyDialog(
+                              context,
+                              "Expiration Date Missing",
+                              "Please select a Expiration Date");
                           return;
                         }
 
@@ -323,20 +311,20 @@ class _FilterScreenState extends State<FilterScreen> {
                         LocationData location = await getLocation();
 
                         final Map<String, dynamic> inci =
-                            json.decode(response.body);
+                            json.decode(response.toString());
 
-                        final imageResponse =
-                            await incidenceProvider.postImages(
-                                images,
-                                inci["id"],
-                                location.latitude.toString(),
-                                location.longitude.toString(),
-                                authProvider.userMap["id"]);
+                        if (images.isNotEmpty) {
+                          await incidenceProvider.postImages(
+                              images,
+                              inci["id"],
+                              location.latitude.toString(),
+                              location.longitude.toString(),
+                              authProvider.userMap["id"]);
+                        }
 
                         if (response.statusCode == 201) {
                           Fluttertoast.showToast(
-                              msg: "Incidence Saved",
-                              backgroundColor: Colors.green);
+                              msg: "WO Saved", backgroundColor: Colors.green);
                           if (!mounted) return;
                           Navigator.pushNamed(context, 'home');
                         } else {
@@ -363,6 +351,29 @@ class _FilterScreenState extends State<FilterScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _ncr() {
+    return Column(
+      children: [
+        SwitchListTile.adaptive(
+            value: _sliderEnable,
+            title: const Text("NCR"),
+            onChanged: (value) {
+              _sliderEnable = value;
+              IncidenceProvider.newIncidence["esNoConformidad"] = value;
+              IncidenceProvider.newIncidence["codigoNC"] = '';
+              setState(() {});
+            }),
+        if (_sliderEnable)
+          TextFormField(
+            decoration: const InputDecoration(label: Text("NCR Code")),
+            onChanged: (value) {
+              IncidenceProvider.newIncidence["codigoNC"] = value;
+            },
+          ),
+      ],
     );
   }
 
@@ -407,7 +418,7 @@ class _FilterScreenState extends State<FilterScreen> {
       );
     } else {
       return DropdownButtonFormField<int>(
-        decoration: const InputDecoration(label: Text("Instalations:")),
+        decoration: const InputDecoration(label: Text("Installations:")),
         items: plantProvider.plants
             .map((e) => DropdownMenuItem(
                 value: e.id, child: Text(e.descripcionInstalacion)))

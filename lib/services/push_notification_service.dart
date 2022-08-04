@@ -14,14 +14,14 @@ class PushNotificationService {
 
     sendNotification(
         title: message.data['title'] ?? 'No Title',
-        body: message.data['body']  ?? 'No body');
+        body: message.data['body'] ?? 'No body');
   }
 
   static Future _onMessagedHandle(RemoteMessage message) async {
     print('_onMessagedHandle:  ${message.messageId}  ');
 
     sendNotification(
-        title: message.data['title']  ?? 'No Title',
+        title: message.data['title'] ?? 'No Title',
         body: message.data['body'] ?? 'No body');
   }
 
@@ -29,9 +29,13 @@ class PushNotificationService {
     print('_onOpenApp:  ${message.messageId}  ');
   }
 
+  static Future<String?> getToken() async {
+    token = await FirebaseMessaging.instance.getToken();
+    return token;
+  }
+
   static Future initializeApp() async {
     await Firebase.initializeApp();
-    token = await FirebaseMessaging.instance.getToken();
 
     FirebaseMessaging.onBackgroundMessage(_backgroundHandle);
     FirebaseMessaging.onMessage.listen(_onMessagedHandle);
@@ -39,6 +43,7 @@ class PushNotificationService {
   }
 
   static void sendNotification({String? title, String? body}) async {
+
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 

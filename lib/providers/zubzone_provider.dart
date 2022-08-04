@@ -1,12 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:json_helpers/json_helpers.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/subzone.dart';
 
-import 'package:http/http.dart' as http;
-
 class SubzoneProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/sub-zones';
+  final String _endpoint = '/sub-zones';
 
   List<Subzone> subzones = [];
   bool isLoading = false;
@@ -18,11 +16,11 @@ class SubzoneProvider extends ChangeNotifier {
 
       final endpoint = '$_endpoint/zone/$idZone';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-  
-      subzones = response.body.jsonList((e) => Subzone.fromMap(e));
+      subzones =
+          (response.data as List).map((x) => Subzone.fromMap(x)).toList();
       isLoading = false;
 
       notifyListeners();

@@ -1,16 +1,14 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:json_helpers/json_helpers.dart';
+import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/models/discipline.dart';
-import 'package:http/http.dart' as http;
-
-import '../global_variables.dart';
 
 class DisciplineProvider extends ChangeNotifier {
   DisciplineProvider() {
     getDisciplinesByUserId(Global.userMap['id'].toString());
   }
 
-  final String _endpoint = 'v1/disciplines';
+  final String _endpoint = '/disciplines';
 
   List<Discipline> disciplines = [];
   bool isLoading = false;
@@ -20,10 +18,10 @@ class DisciplineProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final url = Uri.http(Global.urlAPI, _endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + _endpoint;
+      final response = await Dio().get(url);
 
-      disciplines = response.body.jsonList((e) => Discipline.fromMap(e));
+      disciplines = (response.data as List).map((x) => Discipline.fromMap(x)).toList();
       isLoading = false;
       notifyListeners();
       return disciplines;
@@ -37,12 +35,12 @@ class DisciplineProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final endpoint = 'v1/user-disciplines/user/$userId/disciplines';
+      final endpoint = '/user-disciplines/user/$userId/disciplines';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-      disciplines = response.body.jsonList((e) => Discipline.fromMap(e));
+      disciplines = (response.data as List).map((x) => Discipline.fromMap(x)).toList();
       isLoading = false;
       notifyListeners();
       return disciplines;

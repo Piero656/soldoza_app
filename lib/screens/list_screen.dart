@@ -72,25 +72,28 @@ class ListScreen extends StatelessWidget {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 17),
                               ),
-                              if (incidenceProvider.incidences[index].esNoConformidad!)
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(5.0),
-                                child: const Text(
-                                  'NC',
-                                  style: TextStyle(
-                                    backgroundColor: Colors.redAccent,
-                                    color: Colors.white,
+                              if (incidenceProvider
+                                  .incidences[index].esNoConformidad!)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  child: const Text(
+                                    'NCR',
+                                    style: TextStyle(
+                                      backgroundColor: Colors.redAccent,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
-                              ),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(5.0),
                                 child: Text(
                                   incidenceProvider.incidences[index].estado
                                           ?.codEstado ??
                                       'sin estado',
-                                  style: const TextStyle(
-                                    backgroundColor: Colors.lightGreen,
+                                  style: TextStyle(
+                                    backgroundColor: incidenceProvider
+                                        .incidences[index]
+                                        .getcolorState(),
                                     color: Colors.white,
                                   ),
                                 ),

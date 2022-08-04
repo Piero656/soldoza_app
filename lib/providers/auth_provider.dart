@@ -1,11 +1,11 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'package:soldoza_app/global_variables.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/auth';
+  final String _endpoint = '/auth';
 
   bool isLoading = false;
 
@@ -14,29 +14,33 @@ class AuthProvider extends ChangeNotifier {
   Map<String, dynamic> userMap = {};
 
   Future login(String username, String password) async {
-    isLoading = true;
-    notifyListeners();
-    final String endpoint = '$_endpoint/login';
-
-    final url = Uri.http(Global.urlAPI, endpoint);
-    final response =
-        await http.post(url, body: {"email": username, "password": password});
-
-    isLoading = false;
-    if (response.statusCode == 201) {
-      Map<String, dynamic> resp = jsonDecode(response.body);
-
-      token = resp['token'];
-      userMap = parseJwt(token);
-
-      Global.userMap = userMap;
-
-      print(userMap);
-
+    try {
+      isLoading = true;
       notifyListeners();
-      return resp['token'];
-    } else {
+      final String endpoint = '$_endpoint/login';
+
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio()
+          .post(url, data: {"email": username, "password": password});
+
+
+      if (response.statusCode == 201) {
+        Map<String, dynamic> resp = jsonDecode(response.toString());
+
+        token = resp['token'];
+        userMap = parseJwt(token);
+
+        Global.userMap = userMap;
+
+        print(userMap);
+
+        notifyListeners();
+        return resp['token'];
+      }
+    } catch (e) {
       token = '';
+      isLoading = false;
+
       notifyListeners();
 
       return '';
@@ -47,12 +51,10 @@ class AuthProvider extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    String endpoint = 'v1/users/$userId/update-device-token';
+    String endpoint = '/users/$userId/update-device-token';
 
-    final url = Uri.http(Global.urlAPI, endpoint);
-    final response = await http.put(url, body: {"token": token});
-
-    print(response.body);
+    final url = Global.urlAPI + endpoint;
+    final response = await Dio().put(url, data: {"token": token});
 
     isLoading = false;
     notifyListeners();

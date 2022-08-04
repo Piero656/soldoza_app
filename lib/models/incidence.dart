@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:soldoza_app/models/category.dart';
 import 'package:soldoza_app/models/discipline.dart';
 import 'package:soldoza_app/models/plant.dart';
@@ -13,53 +14,74 @@ import 'package:soldoza_app/models/user.dart';
 import 'package:soldoza_app/models/zone.dart';
 
 class Incidence {
-    Incidence({
-        required this.id,
-        this.fechaIncidencia,
-        this.descripcionIncidencia,
-        this.accionRequerida,
-        this.fechaLimite,
-        this.esNoConformidad,
-        this.codigoNc,
-        this.comentarioReceptor,
-        this.resultadoReceptor,
-        this.codIncidente,
-        this.proyecto,
-        this.instalacion,
-        this.zona,
-        this.subZona,
-        this.usuarioCreador,
-        this.disciplina,
-        this.estado,
-        this.fotos,
-        this.incidenteCategorias,
-    });
+  Incidence({
+    required this.id,
+    this.fechaIncidencia,
+    this.descripcionIncidencia,
+    this.accionRequerida,
+    this.fechaLimite,
+    this.esNoConformidad,
+    this.codigoNc,
+    this.comentarioReceptor,
+    this.resultadoReceptor,
+    this.codIncidente,
+    this.proyecto,
+    this.instalacion,
+    this.zona,
+    this.subZona,
+    this.usuarioCreador,
+    this.disciplina,
+    this.estado,
+    this.fotos,
+    this.incidenteCategorias,
+  });
 
-    int id;
-    DateTime? fechaIncidencia;
-    String? descripcionIncidencia;
-    String? accionRequerida;
-    DateTime? fechaLimite;
-    bool? esNoConformidad;
-    String? codigoNc;
-    String? comentarioReceptor;
-    String? resultadoReceptor;
-    String? codIncidente;
-    Project? proyecto;
-    Plant? instalacion;
-    Zone? zona;
-    Subzone? subZona;
-    User? usuarioCreador;
-    Discipline? disciplina;
-    EstadoClass? estado;
-    List<Foto>? fotos;
-    List<IncidenteCategoria>? incidenteCategorias;
+  int id;
+  DateTime? fechaIncidencia;
+  String? descripcionIncidencia;
+  String? accionRequerida;
+  DateTime? fechaLimite;
+  bool? esNoConformidad;
+  String? codigoNc;
+  String? comentarioReceptor;
+  String? resultadoReceptor;
+  String? codIncidente;
+  Project? proyecto;
+  Plant? instalacion;
+  Zone? zona;
+  Subzone? subZona;
+  User? usuarioCreador;
+  Discipline? disciplina;
+  EstadoClass? estado;
+  List<Foto>? fotos;
+  List<IncidenteCategoria>? incidenteCategorias;
 
-    factory Incidence.fromJson(String str) => Incidence.fromMap(json.decode(str));
+  Color getcolorState() {
+    switch (estado!.id) {
+      case 1:
+        return Colors.black;
+      case 2:
+        return Colors.green;
+      case 3:
+        return Colors.red;
+      case 4:
+        return Colors.blue;
+      case 5:
+        return Colors.lightBlue;
+      case 6:
+        return Colors.yellow;
+      case 7:
+        return Colors.grey.shade300;
+      default:
+        return Colors.green;
+    }
+  }
 
-    String toJson() => json.encode(toMap());
+  factory Incidence.fromJson(String str) => Incidence.fromMap(json.decode(str));
 
-    factory Incidence.fromMap(Map<String, dynamic> json) => Incidence(
+  String toJson() => json.encode(toMap());
+
+  factory Incidence.fromMap(Map<String, dynamic> json) => Incidence(
         id: json["id"],
         fechaIncidencia: DateTime.parse(json["fechaIncidencia"]),
         descripcionIncidencia: json["descripcionIncidencia"],
@@ -75,22 +97,31 @@ class Incidence {
         zona: Zone.fromMap(json["zona"]),
         subZona: Subzone.fromMap(json["subZona"]),
         usuarioCreador: User.fromMap(json["usuarioCreador"]),
-        disciplina: json["disciplina"] == null ? null : Discipline.fromMap(json["disciplina"]),
-        estado: json["estado"] == null ? null : EstadoClass.fromMap(json["estado"]),
+        disciplina: json["disciplina"] == null
+            ? null
+            : Discipline.fromMap(json["disciplina"]),
+        estado:
+            json["estado"] == null ? null : EstadoClass.fromMap(json["estado"]),
         fotos: List<Foto>.from(json["fotos"].map((x) => Foto.fromMap(x))),
-        incidenteCategorias: List<IncidenteCategoria>.from(json["incidenteCategorias"].map((x) => IncidenteCategoria.fromMap(x))),
-    );
+        incidenteCategorias: List<IncidenteCategoria>.from(
+            json["incidenteCategorias"]
+                .map((x) => IncidenteCategoria.fromMap(x))),
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
-        "fechaIncidencia": "${fechaIncidencia!.year.toString().padLeft(4, '0')}-${fechaIncidencia!.month.toString().padLeft(2, '0')}-${fechaIncidencia!.day.toString().padLeft(2, '0')}",
+        "fechaIncidencia":
+            "${fechaIncidencia!.year.toString().padLeft(4, '0')}-${fechaIncidencia!.month.toString().padLeft(2, '0')}-${fechaIncidencia!.day.toString().padLeft(2, '0')}",
         "descripcionIncidencia": descripcionIncidencia,
         "accionRequerida": accionRequerida,
-        "fechaLimite": "${fechaLimite!.year.toString().padLeft(4, '0')}-${fechaLimite!.month.toString().padLeft(2, '0')}-${fechaLimite!.day.toString().padLeft(2, '0')}",
+        "fechaLimite":
+            "${fechaLimite!.year.toString().padLeft(4, '0')}-${fechaLimite!.month.toString().padLeft(2, '0')}-${fechaLimite!.day.toString().padLeft(2, '0')}",
         "esNoConformidad": esNoConformidad,
         "codigoNC": codigoNc,
-        "comentarioReceptor": comentarioReceptor == null ? null : comentarioReceptor,
-        "resultadoReceptor": resultadoReceptor == null ? null : resultadoReceptor,
+        "comentarioReceptor":
+            comentarioReceptor == null ? null : comentarioReceptor,
+        "resultadoReceptor":
+            resultadoReceptor == null ? null : resultadoReceptor,
         "codIncidente": codIncidente == null ? null : codIncidente,
         "proyecto": proyecto!.toMap(),
         "instalacion": instalacion!.toMap(),
@@ -100,94 +131,98 @@ class Incidence {
         "disciplina": disciplina == null ? null : disciplina!.toMap(),
         "estado": estado == null ? null : estado!.toMap(),
         "fotos": List<dynamic>.from(fotos!.map((x) => x.toMap())),
-        "incidenteCategorias": List<dynamic>.from(incidenteCategorias!.map((x) => x.toMap())),
-    };
+        "incidenteCategorias":
+            List<dynamic>.from(incidenteCategorias!.map((x) => x.toMap())),
+      };
 }
 
 class EstadoClass {
-    EstadoClass({
-        required this.id,
-        this.codEstado,
-        this.descripcionEstado,
-    });
+  EstadoClass({
+    required this.id,
+    this.codEstado,
+    this.descripcionEstado,
+  });
 
-    int id;
-    String? codEstado;
-    String? descripcionEstado;
+  int id;
+  String? codEstado;
+  String? descripcionEstado;
 
-    factory EstadoClass.fromJson(String str) => EstadoClass.fromMap(json.decode(str));
+  factory EstadoClass.fromJson(String str) =>
+      EstadoClass.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory EstadoClass.fromMap(Map<String, dynamic> json) => EstadoClass(
+  factory EstadoClass.fromMap(Map<String, dynamic> json) => EstadoClass(
         id: json["id"],
         codEstado: json["codEstado"],
         descripcionEstado: json["descripcionEstado"],
-    );
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "codEstado": codEstado,
         "descripcionEstado": descripcionEstado,
-    };
+      };
 }
 
 class Foto {
-    Foto({
-        required this.id,
-        this.fotoUrl,
-        this.latitud,
-        this.longitud,
-        this.usuario,
-    });
+  Foto({
+    required this.id,
+    this.fotoUrl,
+    this.latitud,
+    this.longitud,
+    this.usuario,
+  });
 
-    int id;
-    String? fotoUrl;
-    String? latitud;
-    String? longitud;
-    User? usuario;
+  int id;
+  String? fotoUrl;
+  String? latitud;
+  String? longitud;
+  User? usuario;
 
-    factory Foto.fromJson(String str) => Foto.fromMap(json.decode(str));
+  factory Foto.fromJson(String str) => Foto.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory Foto.fromMap(Map<String, dynamic> json) => Foto(
+  factory Foto.fromMap(Map<String, dynamic> json) => Foto(
         id: json["id"],
         fotoUrl: json["fotoUrl"],
         latitud: json["latitud"],
         longitud: json["longitud"],
         usuario: User.fromMap(json["usuario"]),
-    );
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "fotoUrl": fotoUrl,
         "latitud": latitud,
         "longitud": longitud,
         "usuario": usuario!.toMap(),
-    };
+      };
 }
 
 class IncidenteCategoria {
-    IncidenteCategoria({
-        required this.id,
-        required this.categoria,
-    });
+  IncidenteCategoria({
+    required this.id,
+    required this.categoria,
+  });
 
-    int id;
-    Category categoria;
+  int id;
+  Category categoria;
 
-    factory IncidenteCategoria.fromJson(String str) => IncidenteCategoria.fromMap(json.decode(str));
+  factory IncidenteCategoria.fromJson(String str) =>
+      IncidenteCategoria.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory IncidenteCategoria.fromMap(Map<String, dynamic> json) => IncidenteCategoria(
+  factory IncidenteCategoria.fromMap(Map<String, dynamic> json) =>
+      IncidenteCategoria(
         id: json["id"],
         categoria: Category.fromMap(json["categoria"]),
-    );
+      );
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "categoria": categoria.toMap(),
-    };
+      };
 }

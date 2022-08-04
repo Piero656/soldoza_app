@@ -9,9 +9,12 @@ import 'package:soldoza_app/providers/project_provider.dart';
 import 'package:soldoza_app/providers/zone_provider.dart';
 import 'package:soldoza_app/providers/zubzone_provider.dart';
 import 'package:soldoza_app/router/app_routes.dart';
+import 'package:soldoza_app/services/push_notification_service.dart';
 import 'package:soldoza_app/theme/app_theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await PushNotificationService.initializeApp();
   runApp(const AppState());
 }
 

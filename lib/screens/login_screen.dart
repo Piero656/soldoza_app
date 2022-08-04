@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
 import 'package:soldoza_app/providers/plant_provider.dart';
@@ -55,10 +54,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.playlist_add,
-                        color: AppTheme.orangeColor,
-                        size: 150,
+                      // const Icon(
+                      //   Icons.playlist_add,
+                      //   color: AppTheme.orangeColor,
+                      //   size: 150,
+                      // ),
+                      Image.asset(
+                        'assets/img1.jpeg',
+                        width: double.infinity,
+                        height: 400,
+                        fit: BoxFit.cover,
                       ),
                       const SizedBox(
                         height: 50,
@@ -79,8 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           formValues['password'] = value;
                         },
                         validator: (value) {
-                          if (value == null) return 'Este Campo Es Requerido';
-                          return value.length < 3 ? 'Minino de 3' : null;
+                          if (value == null) return 'Required field';
+                          return value.length < 3 ? 'Min 3 characters' : null;
                         },
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: const InputDecoration(
@@ -123,27 +128,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                       formValues['password']!);
 
                                   if (token.isNotEmpty) {
-                                    await PushNotificationService
-                                        .initializeApp();
-
-                                    await authProvider.updateFirebaseToken(
-                                        PushNotificationService.token ??
-                                            'no token',
-                                        authProvider.userMap['id'].toString());
-
-                                    print(PushNotificationService.token);
+                                    await PushNotificationService.getToken();
 
                                     await projectProvider.getProjectsByUser(
                                         Global.userMap["id"].toString());
                                     await plantProvider.getPlantByUserId(
                                         Global.userMap["id"].toString());
 
+                                    await authProvider.updateFirebaseToken(
+                                        PushNotificationService.token ?? '',
+                                        authProvider.userMap['id'].toString());
+
                                     if (!mounted) return;
                                     Navigator.pushReplacementNamed(
                                         context, 'home');
                                   } else {
-                                    const text =
-                                        'Usuario o contraseña Incorrectos';
+                                    const text = 'User or password Incorrects';
                                     const snackBar =
                                         SnackBar(content: Text(text));
 
@@ -209,9 +209,9 @@ class _CustomTextField extends StatelessWidget {
       },
       validator: (value) {
         if (value == null) {
-          return 'Este Campo Es Requerido';
+          return 'Required field';
         }
-        return value.length < 3 ? 'Minino de 3' : null;
+        return value.length < 3 ? 'Min 3 characters' : null;
       },
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: const InputDecoration(

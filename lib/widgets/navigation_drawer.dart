@@ -20,14 +20,14 @@ class NavigationDrawer extends StatelessWidget {
         child: SingleChildScrollView(
       child: Column(
         children: [
-          UserProfile(authProvider),
+          userProfile(authProvider),
           MenuOptions(setPosition: setPosition),
         ],
       ),
     ));
   }
 
-  Container UserProfile(AuthProvider authProvider) {
+  Container userProfile(AuthProvider authProvider) {
     return Container(
       width: double.infinity,
       height: 250,

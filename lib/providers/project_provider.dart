@@ -1,11 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:soldoza_app/global_variables.dart';
-import 'package:http/http.dart' as http;
 import 'package:soldoza_app/models/project.dart';
-import 'package:json_helpers/json_helpers.dart';
+
 
 class ProjectProvider extends ChangeNotifier {
-  final String _endpoint = 'v1/projects';
+  final String _endpoint = '/projects';
 
   List<Project> projects = [];
   bool isLoading = true;
@@ -30,10 +30,11 @@ class ProjectProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final url = Uri.http(Global.urlAPI, _endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + _endpoint;
+      final response = await Dio().get(url);
 
-      projects = response.body.jsonList((e) => Project.fromMap(e));
+      projects =
+          (response.data as List).map((x) => Project.fromMap(x)).toList();
 
       isLoading = false;
       notifyListeners();
@@ -48,14 +49,12 @@ class ProjectProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final endpoint = 'v1/project-users/user/$userId/projects';
+      final endpoint = '/project-users/user/$userId/projects';
 
-      final url = Uri.http(Global.urlAPI, endpoint);
-      final response = await http.get(url);
+      final url = Global.urlAPI + endpoint;
+      final response = await Dio().get(url);
 
-      projects = response.body.jsonList((e) => Project.fromMap(e));
-
-      print(projects);
+      projects = (response.data as List).map((x) => Project.fromMap(x)).toList();
 
       isLoading = false;
       notifyListeners();
