@@ -702,7 +702,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     height: 350,
                     fit: BoxFit.cover,
                   ),
-                  Text("Lat - Lng: ${img.latitud}    ${img.longitud}")
+                  SelectableText("Lat - Lng: ${img.latitud}    ${img.longitud}")
                 ],
               ),
             ),
@@ -744,7 +744,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   const SizedBox(
                     height: 5,
                   ),
-                  Text("Lat - Lng: ${img.latitud}    ${img.longitud}")
+                  SelectableText("Lat - Lng: ${img.latitud}    ${img.longitud}")
                 ],
               ),
             ),
