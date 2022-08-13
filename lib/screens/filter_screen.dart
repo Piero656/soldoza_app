@@ -40,7 +40,10 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Future pickImage() async {
     try {
+
       final imagesp = await ImagePicker().pickMultiImage();
+
+      print(imagesp?.length ?? 'No hay nada') ;
 
       if (imagesp == null) return;
 
@@ -49,6 +52,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
         images.add(imageTemp);
       }
+
+      print(images.length);
 
       setState(() {});
     } on PlatformException catch (e) {
@@ -186,6 +191,7 @@ class _FilterScreenState extends State<FilterScreen> {
               children: [
                 ElevatedButton(
                     onPressed: () async {
+                      print('pick');
                       await pickImage();
                     },
                     child: const Text("Image Gallery")),
@@ -308,12 +314,20 @@ class _FilterScreenState extends State<FilterScreen> {
                         final response =
                             await incidenceProvider.postIncidence();
 
-                        LocationData location = await getLocation();
+                        print(response.statusCode.toString());
+
 
                         final Map<String, dynamic> inci =
                             json.decode(response.toString());
 
+
                         if (images.isNotEmpty) {
+
+                        LocationData location = await getLocation();
+
+                            print(location.toString());
+
+
                           await incidenceProvider.postImages(
                               images,
                               inci["id"],

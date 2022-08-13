@@ -4,6 +4,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'firebase_options.dart';
 
+// Key ID:79R9LQBX7X
+
 class PushNotificationService {
   static FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -31,15 +33,33 @@ class PushNotificationService {
 
   static Future<String?> getToken() async {
     token = await FirebaseMessaging.instance.getToken();
+
+    print(token);
+
     return token;
   }
 
   static Future initializeApp() async {
     await Firebase.initializeApp();
+    await requestPermissions();
 
     FirebaseMessaging.onBackgroundMessage(_backgroundHandle);
     FirebaseMessaging.onMessage.listen(_onMessagedHandle);
     FirebaseMessaging.onMessageOpenedApp.listen(_onOpenApp);
+  }
+
+  static requestPermissions() async {
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    print(settings.authorizationStatus);
   }
 
   static void sendNotification({String? title, String? body}) async {

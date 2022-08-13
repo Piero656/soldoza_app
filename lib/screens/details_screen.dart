@@ -545,9 +545,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       await incidenceProvider.updateFields(
                           fields, incidence.id.toString());
 
-                      LocationData location = await getLocation();
 
                       if (images.isNotEmpty) {
+                      LocationData location = await getLocation();
+
                         await incidenceProvider.postImages(
                             images,
                             incidence.id,
