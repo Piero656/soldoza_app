@@ -22,9 +22,15 @@ class PushNotificationService {
   static Future _onMessagedHandle(RemoteMessage message) async {
     print('_onMessagedHandle:  ${message.messageId}  ');
 
+    print(message.data.toString());
+    print(message.notification?.title.toString());
+
+    print(message.notification?.body.toString());
+
+
     sendNotification(
-        title: message.data['title'] ?? 'No Title',
-        body: message.data['body'] ?? 'No body');
+        title: message.notification?.title.toString() ?? 'No Title',
+        body: message.notification?.body.toString()?? 'No body');
   }
 
   static Future _onOpenApp(RemoteMessage message) async {
