@@ -12,6 +12,7 @@ class PushNotificationService {
   static String? token;
 
   static Future _backgroundHandle(RemoteMessage message) async {
+
     print('background:  ${message.messageId}  ');
 
     sendNotification(
@@ -27,10 +28,9 @@ class PushNotificationService {
 
     print(message.notification?.body.toString());
 
-
     sendNotification(
-        title: message.notification?.title.toString() ?? 'No Title',
-        body: message.notification?.body.toString()?? 'No body');
+        title: message.data['title'] ?? 'No Title',
+        body: message.data['body'] ?? 'No body');
   }
 
   static Future _onOpenApp(RemoteMessage message) async {
