@@ -687,7 +687,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     } else {
       return Column(
         children: [
-          _customLabel("Transmitter Images"),
+          _customLabel("Issuer Images"),
           const SizedBox(
             height: 18,
           ),
@@ -700,7 +700,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     image: NetworkImage(img.fotoUrl!),
                     placeholder: const AssetImage("assets/jar-loading.gif"),
                     width: double.infinity,
-                    height: 350,
+                    height: 500,
                     fit: BoxFit.cover,
                   ),
                   SelectableText("Lat - Lng: ${img.latitud}    ${img.longitud}")
@@ -739,7 +739,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     image: NetworkImage(img.fotoUrl!),
                     placeholder: const AssetImage("assets/jar-loading.gif"),
                     width: double.infinity,
-                    height: 350,
+                    height: 500,
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(

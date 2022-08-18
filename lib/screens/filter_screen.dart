@@ -225,7 +225,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   child: Image.file(
                     File(i.path),
                     width: double.infinity,
-                    height: 350,
+                    height: 500,
                     fit: BoxFit.cover,
                   ),
                 ),
