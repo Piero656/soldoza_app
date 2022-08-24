@@ -103,7 +103,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 _customLabel("WO Date: "),
                 _customValue(
                     incidence.fechaIncidencia!.toString().substring(0, 10)),
-                _customLabel("Expiration Date: "),
+                _customLabel("Due Date: "),
                 _customValue(
                     incidence.fechaLimite!.toString().substring(0, 10)),
                 _customLabel("Customer"),
@@ -141,11 +141,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     "${incidence.estado!.codEstado} - ${incidence.estado!.descripcionEstado}"),
                 _customLabel("Commented"),
                 _customValue(incidence.comentarioReceptor == ''
-                    ? 'There is not commented'
+                    ? 'There is not commented description'
                     : incidence.comentarioReceptor!),
                 _customLabel("Corrected"),
                 _customValue(incidence.resultadoReceptor == ''
-                    ? 'There is not corrected'
+                    ? 'There is not corrected description'
                     : incidence.resultadoReceptor!),
                 const SizedBox(
                   height: 18,
@@ -545,9 +545,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       await incidenceProvider.updateFields(
                           fields, incidence.id.toString());
 
-
                       if (images.isNotEmpty) {
-                      LocationData location = await getLocation();
+                        LocationData location = await getLocation();
 
                         await incidenceProvider.postImages(
                             images,
@@ -683,7 +682,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
 
     if (emisorImages.isEmpty) {
-      return const Text("There were no images transmitted.");
+      return const Text("There were not issuer images.");
     } else {
       return Column(
         children: [
@@ -722,7 +721,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
 
     if (emisorImages.isEmpty) {
-      return const Text("There were no images recived.");
+      return const Text("There were not receiver images.");
     } else {
       return Column(
         children: [

@@ -156,7 +156,7 @@ class _FilterScreenState extends State<FilterScreen> {
               controller: myController,
               readOnly: true,
               decoration: const InputDecoration(
-                  label: Text("Expiration Date"),
+                  label: Text("Due Date"),
                   suffixIcon: Icon(Icons.calendar_month_outlined)),
               onTap: () async {
                 DateTime? newDate = await showDatePicker(
@@ -306,8 +306,8 @@ class _FilterScreenState extends State<FilterScreen> {
                             null) {
                           await _showMyDialog(
                               context,
-                              "Expiration Date Missing",
-                              "Please select a Expiration Date");
+                              "Due Date Missing",
+                              "Please select a Due Date");
                           return;
                         }
 
