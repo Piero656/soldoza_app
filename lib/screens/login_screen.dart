@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:soldoza_app/global_variables.dart';
 import 'package:soldoza_app/providers/auth_provider.dart';
+import 'package:soldoza_app/providers/discipline_provider.dart';
 import 'package:soldoza_app/providers/plant_provider.dart';
 import 'package:soldoza_app/providers/project_provider.dart';
 import 'package:soldoza_app/services/push_notification_service.dart';
@@ -21,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final projectProvider = Provider.of<ProjectProvider>(context);
     final plantProvider = Provider.of<PlantProvider>(context);
+    final disciplineProvider = Provider.of<DisciplineProvider>(context);
 
     final GlobalKey<FormState> myFormKey = GlobalKey<FormState>();
 
@@ -134,6 +136,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Global.userMap["id"].toString());
                                     await plantProvider.getPlantByUserId(
                                         Global.userMap["id"].toString());
+                                    await disciplineProvider
+                                        .getDisciplinesByUserId(
+                                            Global.userMap["id"].toString());
 
                                     await authProvider.updateFirebaseToken(
                                         PushNotificationService.token ?? '',
