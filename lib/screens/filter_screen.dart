@@ -41,7 +41,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Future pickImage() async {
     try {
 
-      final imagesp = await ImagePicker().pickMultiImage();
+      final imagesp = await ImagePicker().pickMultiImage(imageQuality: 50);
 
       print(imagesp?.length ?? 'No hay nada') ;
 
@@ -63,7 +63,7 @@ class _FilterScreenState extends State<FilterScreen> {
 
   Future takePhoto() async {
     try {
-      final imagep = await ImagePicker().pickImage(source: ImageSource.camera);
+      final imagep = await ImagePicker().pickImage(source: ImageSource.camera, imageQuality: 50);
 
       if (imagep == null) return;
 

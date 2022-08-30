@@ -45,7 +45,8 @@ class IncidenceProvider extends ChangeNotifier {
         'subZonaId': Global.selects['filter_4'].toString(),
         'disciplinaId': Global.selects['filter_5'].toString()
       });
-      incidences = (response.data as List).map((x) => Incidence.fromMap(x)).toList();
+      incidences =
+          (response.data as List).map((x) => Incidence.fromMap(x)).toList();
 
       isLoading = false;
       notifyListeners();
@@ -80,6 +81,12 @@ class IncidenceProvider extends ChangeNotifier {
       filestoUpload.add(img);
     }
 
+    print(filestoUpload.length);
+    print(latitud);
+    print(longitud);
+    print(usuario.toString());
+    print(incidenteId.toString());
+
     final endpoint = '${Global.urlAPI}/photos/upload-to-incident';
 
     FormData formData = FormData.fromMap({
@@ -90,7 +97,11 @@ class IncidenceProvider extends ChangeNotifier {
       "usuario": usuario
     });
 
+    print(endpoint.toString());
+
     var response = await Dio().post(endpoint, data: formData);
+
+    print(response.statusCode);
 
     return response;
   }
