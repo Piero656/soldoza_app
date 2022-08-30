@@ -1,5 +1,5 @@
 class Global {
-  static String urlAPI = 'http://192.168.100.16:3000/v1';
+  static String urlAPI = 'http://20.42.84.191/v1';
 
   static Map<String, dynamic> userMap = {};
 
