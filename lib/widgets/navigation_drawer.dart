@@ -39,7 +39,7 @@ class NavigationDrawer extends StatelessWidget {
             borderRadius: BorderRadius.circular(55),
             child: FadeInImage(
               image: NetworkImage(
-                  'https://storagesoldoza.blob.core.windows.net/perfiles/${authProvider.userMap['userPhoto']}'),
+                  'https://storagewo.blob.core.windows.net/perfiles/${authProvider.userMap['userPhoto']}'),
               placeholder: const AssetImage('assets/jar-loading.gif'),
               width: 120,
               height: 120,
